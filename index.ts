@@ -1,6 +1,7 @@
 import http from "http";
 const app = require("./app");
 const connectDB = require("./src/lib/connectDB");
+require("dotenv").config();
 
 import * as express from "express";
 const router = express.Router();
