@@ -1,13 +1,12 @@
-const http = require("http");
+import http from "http";
 const app = require("./app");
-const connectDB = require("./lib/connectDB");
-const io = require("./io");
+const connectDB = require("./src/lib/connectDB");
 
 import * as express from "express";
 const router = express.Router();
 
 const server = http.createServer(app);
-io(server);
+// io(server);
 
 const PORT = process.env.PORT || 4000;
 

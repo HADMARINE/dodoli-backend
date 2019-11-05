@@ -1,4 +1,4 @@
-require("./lib/getSettings");
+// require("./lib/getSettings");
 
 import express from "express";
 const cors = require("cors");
@@ -6,8 +6,8 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-const throwError = require("./lib/throwError");
-const getRoutes = require("./lib/getRoutes");
+const throwError = require("./src/lib/throwError");
+const getRoutes = require("./src/lib/getRoutes");
 
 const routes = getRoutes();
 
@@ -29,6 +29,7 @@ app.use(() => {
 });
 // Error 처리 핸들러
 
+// tslint:disable-next-line: comment-format
 //eslint-disable-next-line
 app.use((error: any, req: any, res: any, next: any) => {
   const status = error.status || 500;
