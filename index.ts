@@ -19,9 +19,4 @@ connectDB()
   })
   .catch((e: any) => console.error(e));
 
-router.get('/', (req: any, res: any) => {
-  const date = new Date();
-  res.send(date);
-});
-
 module.exports = router;
