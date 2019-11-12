@@ -29,8 +29,6 @@ app.use(() => {
 });
 // Error 처리 핸들러
 
-// tslint:disable-next-line: comment-format
-//eslint-disable-next-line
 app.use((error: any, req: any, res: any, next: any) => {
   const status = error.status || 500;
   const message =
