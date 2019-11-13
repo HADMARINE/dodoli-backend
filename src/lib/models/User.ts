@@ -27,10 +27,10 @@ const userSchema = new Schema({
 });
 
 export interface UserDocument extends Document {
-  id: string;
+  uid: string;
   password: string;
   nickname: string;
-  encKey: string;
+  enckey: string;
   data: [object];
   comparePassword(userPw: string): boolean;
 }
