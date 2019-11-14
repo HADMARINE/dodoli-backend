@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 
 import bodyParser from 'body-parser';
-const throwError = require('../lib/throwError.js');
+import throwError from '../lib/throwError';
 
 router.use(bodyParser.json());
 
