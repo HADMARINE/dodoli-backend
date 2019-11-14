@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-const throwError = require('./src/lib/throwError');
+import throwError from './src/lib/throwError';
 const getRoutes = require('./src/lib/getRoutes');
 
 const routes = getRoutes();
