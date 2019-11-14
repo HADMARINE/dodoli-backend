@@ -7,7 +7,6 @@ import * as express from 'express';
 const router = express.Router();
 
 const server = http.createServer(app);
-// io(server);
 
 const PORT = process.env.PORT || 4000;
 
