@@ -57,4 +57,4 @@ router.post('/', async (req: any, res: any, next: any) => {
   }
 });
 
-export default router;
+module.exports = router;
