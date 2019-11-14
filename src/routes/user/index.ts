@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 const throwError = require('../lib/throwError.js');
 import util from 'util';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 
 // const User = require('../../lib/models/User');
 import User from '../../lib/models/User';
@@ -85,9 +86,26 @@ router.post('/overlap', async (req: any, res: any, next: any) => {
 
     const user = User.findOne(query);
 
-    res.json({ overlap: !!user });
+    let status: number;
+    if (user) {
+      status = 409;
+    } else {
+      status = 201;
+    }
+    res.status(status).json({ overlap: !!user });
   } catch (e) {
     next(e);
+  }
+});
+
+router.post('/data', (req: any, res: any, next: any) => {
+  const token = req.body.token;
+  try {
+    const tokenValue = jwt.verify(token, process.env.TOKEN_KEY || 'tokenkey');
+
+    User.findOne;
+  } catch (e) {
+    return throwError('토큰 검증에 실패했습니다.', 403);
   }
 });
 
