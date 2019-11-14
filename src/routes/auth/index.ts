@@ -16,19 +16,17 @@ router.post('/', async (req: any, res: any, next: any) => {
   try {
     const pbkdf2: Function = util.promisify(crypto.pbkdf2);
 
-    const { id, password } = req.body;
-    const user: any = User.findOne({ id });
+    const { uid, password } = req.body;
+    if (!uid || !password) throwError('필수 항목이 입력되지 않았습니다.', 500);
 
-    if (!id || !password) throwError('필수 항목이 입력되지 않았습니다.', 500);
+    // tslint:disable-next-line: await-promise
+    const user: any = await User.findOne({ uid });
+
     if (!user) throwError('로그인에 실패했습니다.', 500);
 
-    const cryptoPassword: string = pbkdf2(
-      password,
-      user.enckey,
-      100000,
-      64,
-      'sha512'
-    ).toString();
+    const cryptoPassword: string = (
+      await pbkdf2(password, user.enckey, 100000, 64, 'sha512')
+    ).toString('base64');
 
     if (user.password !== cryptoPassword) {
       throwError('로그인에 실패했습니다.', 500);
@@ -39,11 +37,11 @@ router.post('/', async (req: any, res: any, next: any) => {
       nickname: user.nickname,
       _id: user._id
     };
-    const tokenExpireTime: number = Date.now() + 10800;
+    const tokenExpireTime: number = 10800;
 
     const jwtSettings: object = {
       expiresIn: tokenExpireTime,
-      issuer: 'dodoli.net'
+      issuer: process.env.NODE_ENV === 'development' ? '*' : 'dodoli.net'
     };
 
     const result: string = jwt.sign(

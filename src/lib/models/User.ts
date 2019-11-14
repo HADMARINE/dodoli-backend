@@ -32,7 +32,6 @@ export interface UserDocument extends Document {
   nickname: string;
   enckey: string;
   data: [Object];
-  comparePassword(userPw: string): boolean;
 }
 
 const User: Model<UserDocument> = model('user', userSchema);

@@ -8,7 +8,7 @@ function getPathRoutes(routePath = '/'): any {
   const datas = [];
 
   for (const f of dir) {
-    const file: any = path.join(routesPath, f);
+    const file = path.join(routesPath, f);
     const stat = fs.statSync(file);
     if (stat.isDirectory()) {
       datas.push(...getPathRoutes(`${routePath.replace(/\/$/, '')}/${f}`));
@@ -18,7 +18,6 @@ function getPathRoutes(routePath = '/'): any {
       continue;
     }
     const router = require(file);
-
     if (Object.getPrototypeOf(router) !== Router) {
       continue;
     }

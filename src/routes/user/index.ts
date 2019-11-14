@@ -35,17 +35,15 @@ router.post('/', async (req, res, next) => {
     const randomBytes: Function = util.promisify(crypto.randomBytes);
     const pbkdf2: Function = util.promisify(crypto.pbkdf2);
 
-    const buf: string = randomBytes(64).toString();
-    const key: string = pbkdf2(password, buf, 100000, 64, 'sha512').toString();
+    const buf: string = (await randomBytes(64)).toString('base64');
+    const key: string = (
+      await pbkdf2(password, buf, 100000, 64, 'sha512')
+    ).toString('base64');
 
     if (process.env.EXAMINE_PASSWORD) {
-      const testKey: string = pbkdf2(
-        password,
-        buf,
-        100000,
-        64,
-        'sha512'
-      ).toString();
+      const testKey: string = (
+        await pbkdf2(password, buf, 100000, 64, 'sha512')
+      ).toString('base64');
       if (testKey !== key) {
         return throwError('암호화 검증에 실패했습니다.', 500);
       }
@@ -105,15 +103,24 @@ router.post('/overlap', async (req, res, next) => {
   }
 });
 
-router.post('/data', (req, res, next) => {
-  const token = req.body.token;
-  try {
-    const tokenValue: UserDocument =
-      jwt.verify(token, process.env.TOKEN_KEY || 'tokenkey') || JSON.parse('');
+router.post('/data', async (req, res, next) => {
+  const token: any = req.headers['x-access-token'];
 
-    User.findOne({ uid: tokenValue.uid || null });
+  try {
+    const tokenValue: any = jwt.verify(
+      token,
+      process.env.TOKEN_KEY || 'tokenkey'
+    );
+
+    const user: any = await User.findOne({ uid: tokenValue.userId }).select(
+      'uid nickname email data'
+    );
+
+    console.log(user.uid);
+
+    res.json(user);
   } catch (e) {
-    return throwError('토큰 검증에 실패했습니다.', 403);
+    return throwError('데이터를 읽어오는 데 실패했습니다.', 403);
   }
 });
 
