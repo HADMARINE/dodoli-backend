@@ -13,18 +13,18 @@ import User, { UserDocument } from '../../lib/models/User';
 router.use(bodyParser.json());
 
 router.get('/', (req: any, res: any) => {
-  const date = new Date();
+  const date: Date = new Date();
   res.send(date);
 });
 
-router.post('/', async (req: any, res: any, next: any) => {
+router.post('/', async (req, res, next) => {
   try {
     const { uid, password, nickname, email } = req.body;
     if (!uid || !password || !nickname || !email) {
       return throwError('필수 항목이 입력되지 않았습니다', 400);
     }
     // tslint:disable-next-line: await-promise
-    const duplicateUserVerify = await User.findOne().or([
+    const duplicateUserVerify: any = await User.findOne().or([
       { uid },
       { nickname },
       { email }
@@ -68,7 +68,7 @@ router.post('/', async (req: any, res: any, next: any) => {
   }
 });
 
-router.post('/:id/modify', async (req: any, res: any, next: any) => {
+router.post('/:id/modify', async (req, res, next) => {
   try {
     res.send('id : ' + req.params.id + ' ||| NOT READY...');
   } catch (e) {
@@ -76,7 +76,7 @@ router.post('/:id/modify', async (req: any, res: any, next: any) => {
   }
 });
 
-router.post('/overlap', async (req: any, res: any, next: any) => {
+router.post('/overlap', async (req, res, next) => {
   try {
     const { type, content } = req.body;
 
@@ -105,7 +105,7 @@ router.post('/overlap', async (req: any, res: any, next: any) => {
   }
 });
 
-router.post('/data', (req: any, res: any, next: any) => {
+router.post('/data', (req, res, next) => {
   const token = req.body.token;
   try {
     const tokenValue: UserDocument =
