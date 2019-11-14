@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const { Router } = require('express');
+import fs from 'fs';
+import path from 'path';
+import { Router } from 'express';
 
 function getPathRoutes(routePath = '/'): any {
   const routesPath = path.resolve(__dirname, '../routes', `.${routePath}`);
@@ -8,7 +8,7 @@ function getPathRoutes(routePath = '/'): any {
   const datas = [];
 
   for (const f of dir) {
-    const file = path.join(routesPath, f);
+    const file: any = path.join(routesPath, f);
     const stat = fs.statSync(file);
     if (stat.isDirectory()) {
       datas.push(...getPathRoutes(`${routePath.replace(/\/$/, '')}/${f}`));
@@ -18,6 +18,7 @@ function getPathRoutes(routePath = '/'): any {
       continue;
     }
     const router = require(file);
+
     if (Object.getPrototypeOf(router) !== Router) {
       continue;
     }
@@ -33,4 +34,4 @@ function getRoutes() {
   return getPathRoutes();
 }
 
-module.exports = getRoutes;
+export default getRoutes;
