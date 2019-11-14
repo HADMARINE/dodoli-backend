@@ -63,7 +63,6 @@ router.post('/', async (req: any, res: any, next: any) => {
 
 router.post('/:id/modify', async (req: any, res: any, next: any) => {
   try {
-    req.para;
     res.send('id : ' + req.params.id + ' ||| NOT READY...');
   } catch (e) {
     next(e);
