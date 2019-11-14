@@ -2,13 +2,13 @@ import express from 'express';
 const router = express.Router();
 
 import bodyParser from 'body-parser';
-const throwError = require('../lib/throwError.js');
+import throwError from '../../lib/throwError';
 import util from 'util';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
 // const User = require('../../lib/models/User');
-import User from '../../lib/models/User';
+import User, { UserDocument } from '../../lib/models/User';
 
 router.use(bodyParser.json());
 
@@ -32,24 +32,30 @@ router.post('/', async (req: any, res: any, next: any) => {
     if (duplicateUserVerify) {
       return throwError('이미 존재하는 유저입니다.', 422);
     }
-    const randomBytes = util.promisify(crypto.randomBytes);
-    const pbkdf2 = util.promisify(crypto.pbkdf2);
+    const randomBytes: Function = util.promisify(crypto.randomBytes);
+    const pbkdf2: Function = util.promisify(crypto.pbkdf2);
 
-    const buf = randomBytes(64);
-    const key = pbkdf2(password, buf.toString(), 100000, 64, 'sha512');
+    const buf: string = randomBytes(64).toString();
+    const key: string = pbkdf2(password, buf, 100000, 64, 'sha512').toString();
 
     if (process.env.EXAMINE_PASSWORD) {
-      const testKey = pbkdf2(password, buf.toString(), 100000, 64, 'sha512');
-      if (testKey.toString() !== key.toString()) {
+      const testKey: string = pbkdf2(
+        password,
+        buf,
+        100000,
+        64,
+        'sha512'
+      ).toString();
+      if (testKey !== key) {
         return throwError('암호화 검증에 실패했습니다.', 500);
       }
     }
 
     const user = new User({
       uid: uid,
-      password: key.toString(),
+      password: key,
       nickname: nickname,
-      enckey: buf.toString(),
+      enckey: buf,
       email: email,
       data: []
     });
@@ -73,18 +79,19 @@ router.post('/:id/modify', async (req: any, res: any, next: any) => {
 router.post('/overlap', async (req: any, res: any, next: any) => {
   try {
     const { type, content } = req.body;
+
     if (!type || !content) {
       return throwError('필수 항목이 입력되지 않았습니다.', 400);
     }
-    const typeArray = ['uid', 'nickname', 'email'];
+    const typeArray: Array<String> = ['uid', 'nickname', 'email'];
 
     if (typeArray.indexOf(type) !== -1) {
       return throwError('입력 값이 잘못되었습니다', 400);
     }
 
-    const query = { [type]: content };
+    const query: Object = { [type]: content };
 
-    const user = User.findOne(query);
+    const user: Object = User.findOne(query);
 
     let status: number;
     if (user) {
@@ -101,9 +108,10 @@ router.post('/overlap', async (req: any, res: any, next: any) => {
 router.post('/data', (req: any, res: any, next: any) => {
   const token = req.body.token;
   try {
-    const tokenValue = jwt.verify(token, process.env.TOKEN_KEY || 'tokenkey');
+    const tokenValue: UserDocument =
+      jwt.verify(token, process.env.TOKEN_KEY || 'tokenkey') || JSON.parse('');
 
-    User.findOne;
+    User.findOne({ uid: tokenValue.uid || null });
   } catch (e) {
     return throwError('토큰 검증에 실패했습니다.', 403);
   }
