@@ -20,7 +20,7 @@ router.post('/', async (req: any, res: any, next: any) => {
   try {
     const { uid, password, nickname, email } = req.body;
     if (!uid || !password || !nickname || !email) {
-      throwError('필수 항목이 입력되지 않았습니다', 400);
+      return throwError('필수 항목이 입력되지 않았습니다', 400);
     }
     // tslint:disable-next-line: await-promise
     const duplicateUserVerify = await User.findOne().or([
@@ -29,7 +29,7 @@ router.post('/', async (req: any, res: any, next: any) => {
       { email }
     ]);
     if (duplicateUserVerify) {
-      throwError('이미 존재하는 유저입니다.', 422);
+      return throwError('이미 존재하는 유저입니다.', 422);
     }
     const randomBytes = util.promisify(crypto.randomBytes);
     const pbkdf2 = util.promisify(crypto.pbkdf2);
@@ -40,7 +40,7 @@ router.post('/', async (req: any, res: any, next: any) => {
     if (process.env.EXAMINE_PASSWORD) {
       const testKey = pbkdf2(password, buf.toString(), 100000, 64, 'sha512');
       if (testKey.toString() !== key.toString()) {
-        throwError('암호화 검증에 실패했습니다.', 500);
+        return throwError('암호화 검증에 실패했습니다.', 500);
       }
     }
 
@@ -64,6 +64,28 @@ router.post('/', async (req: any, res: any, next: any) => {
 router.post('/:id/modify', async (req: any, res: any, next: any) => {
   try {
     res.send('id : ' + req.params.id + ' ||| NOT READY...');
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post('/overlap', async (req: any, res: any, next: any) => {
+  try {
+    const { type, content } = req.body;
+    if (!type || !content) {
+      return throwError('필수 항목이 입력되지 않았습니다.', 400);
+    }
+    const typeArray = ['uid', 'nickname', 'email'];
+
+    if (typeArray.indexOf(type) !== -1) {
+      return throwError('입력 값이 잘못되었습니다', 400);
+    }
+
+    const query = { [type]: content };
+
+    const user = User.findOne(query);
+
+    res.json({ overlap: !!user });
   } catch (e) {
     next(e);
   }

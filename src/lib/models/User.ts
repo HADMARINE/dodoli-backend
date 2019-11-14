@@ -31,7 +31,7 @@ export interface UserDocument extends Document {
   password: string;
   nickname: string;
   enckey: string;
-  data: [object];
+  data: [Object];
   comparePassword(userPw: string): boolean;
 }
 
