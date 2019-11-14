@@ -1,13 +1,11 @@
-// require("./lib/getSettings");
-
 import express from 'express';
-const cors = require('cors');
+import cors from 'cors';
 const bodyParser = require('body-parser');
 
 const app = express();
 
 import throwError from './src/lib/throwError';
-const getRoutes = require('./src/lib/getRoutes');
+import getRoutes from './src/lib/getRoutes';
 
 const routes = getRoutes();
 
