@@ -60,7 +60,7 @@ router.post('/', async (req, res, next) => {
 
     await user.save();
 
-    res.status(201).json({ success: true });
+    res.status(201).send(true);
   } catch (e) {
     next(e);
   }
@@ -95,7 +95,7 @@ router.post('/overlap', async (req, res, next) => {
     if (user) {
       status = 409;
     } else {
-      status = 201;
+      status = 200;
     }
     res.status(status).json({ overlap: !!user });
   } catch (e) {
@@ -107,10 +107,8 @@ router.post('/data', async (req, res, next) => {
   const token: any = req.headers['x-access-token'];
 
   try {
-    const tokenValue: any = jwt.verify(
-      token,
-      process.env.TOKEN_KEY || 'tokenkey'
-    );
+    const tokenValue: any =
+      jwt.verify(token, process.env.TOKEN_KEY || 'tokenkey') || JSON.parse('');
 
     const user: any = await User.findOne({ uid: tokenValue.userId }).select(
       'uid nickname email data'
@@ -118,7 +116,7 @@ router.post('/data', async (req, res, next) => {
 
     console.log(user.uid);
 
-    res.json(user);
+    res.status(200).json(user);
   } catch (e) {
     return throwError('데이터를 읽어오는 데 실패했습니다.', 403);
   }
