@@ -49,7 +49,7 @@ router.post('/', async (req: any, res: any, next: any) => {
       process.env.TOKEN_KEY || 'tokenkey',
       jwtSettings
     );
-    res.status(201).json({ token: result });
+    res.status(200).json({ token: result });
   } catch (e) {
     next(e);
   }
