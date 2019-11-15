@@ -5,7 +5,7 @@
   "author": "HADMARINE <joonlee031@live.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "NODE_ENV=development nodemon",
     "build": "tsc",
     "lint": "tslint -p"
   },
