@@ -20,10 +20,10 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: true
-  },
-  data: {
-    type: [Object]
   }
+  // data :{
+  //   type: [Object]
+  // }
 });
 
 export interface UserDocument extends Document {
@@ -31,7 +31,7 @@ export interface UserDocument extends Document {
   password: string;
   nickname: string;
   enckey: string;
-  data: [Object];
+  // data: [Object];
 }
 
 const User: Model<UserDocument> = model('user', userSchema);
