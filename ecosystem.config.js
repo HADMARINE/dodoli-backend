@@ -5,7 +5,8 @@ module.exports = {
       script: './index.ts',
       env: {
         NODE_ENV: 'production'
-      }
+      },
+      watch: 'true'
     }
   ]
 };
