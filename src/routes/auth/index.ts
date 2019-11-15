@@ -17,11 +17,11 @@ router.post('/', async (req: any, res: any, next: any) => {
     const pbkdf2: Function = util.promisify(crypto.pbkdf2);
 
     const { uid, password } = req.body;
+    console.log(req.body);
     if (!uid || !password) throwError('필수 항목이 입력되지 않았습니다.', 500);
 
     // tslint:disable-next-line: await-promise
     const user: any = await User.findOne({ uid });
-
     if (!user) throwError('로그인에 실패했습니다.', 500);
 
     const cryptoPassword: string = (
