@@ -110,6 +110,7 @@ router.post('/data', async (req, res, next) => {
     const tokenValue: any =
       jwt.verify(token, process.env.TOKEN_KEY || 'tokenkey') || JSON.parse('');
 
+    // tslint:disable-next-line: await-promise
     const user: any = await User.findOne({ uid: tokenValue.userId }).select(
       'uid nickname email data'
     );
