@@ -9,9 +9,9 @@ const router = express.Router();
 
 router.use(bodyParser.json());
 
-router.get('/', async (req, res, next) => {
+router.get('/user/:postid', async (req, res, next) => {
   try {
-    const postId: any = req.query.postid || undefined;
+    const postId: any = req.params.postid || undefined;
 
     if (!postId) {
       return throwError('필수 항목이 입력되지 않았습니다.', 500);
@@ -20,6 +20,7 @@ router.get('/', async (req, res, next) => {
     let post;
 
     try {
+      // tslint:disable-next-line: await-promise
       post = await Post.findOne({ _id: postId });
     } catch (e) {
       return throwError('게시글이 존재하지 않습니다.', 404);
@@ -68,11 +69,12 @@ router.get('/user', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const { title, data } = req.body;
+    const { title, data, hashtags } = req.body;
     const token: any = req.headers['x-access-token'];
-    if (!title || !data || !token) {
+    if (!title || !data || !token || !hashtags) {
       return throwError('필수 항목이 입력되지 않았습니다.', 500);
     }
+
     let user: any;
     try {
       user = jwt.verify(token, process.env.TOKEN_KEY || 'tokenkey');
@@ -84,6 +86,7 @@ router.post('/', async (req, res, next) => {
       title,
       data,
       user: user.userId,
+      hashtags,
       date: Date.now()
     });
 
