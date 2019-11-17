@@ -27,6 +27,7 @@ export interface PostDocument extends Document {
   title: string;
   data: string;
   user: string;
+  hashtags: string;
 }
 
 const Post: Model<PostDocument> = model('post', postSchema);
