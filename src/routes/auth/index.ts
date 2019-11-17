@@ -16,9 +16,10 @@ router.post('/', async (req: any, res: any, next: any) => {
   try {
     const pbkdf2: Function = util.promisify(crypto.pbkdf2);
 
-    const { uid, password } = req.body;
-    console.log(req.body);
-    if (!uid || !password) throwError('필수 항목이 입력되지 않았습니다.', 500);
+    const { uid, password, publicip } = req.body;
+    if (!uid || !password || !publicip) {
+      throwError('필수 항목이 입력되지 않았습니다.', 500);
+    }
 
     // tslint:disable-next-line: await-promise
     const user: any = await User.findOne({ uid });
@@ -35,7 +36,8 @@ router.post('/', async (req: any, res: any, next: any) => {
     const payload: object = {
       userId: user.uid,
       nickname: user.nickname,
-      _id: user._id
+      _id: user._id,
+      publicip
     };
     const tokenExpireTime: number = 10800;
 
@@ -50,6 +52,31 @@ router.post('/', async (req: any, res: any, next: any) => {
       jwtSettings
     );
     res.status(200).json({ token: result });
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post('/verify', async (req, res, next) => {
+  try {
+    const token: any = req.headers['x-access-token'];
+    const userPublicIp = req.body.publicip;
+
+    if (!token) {
+      return throwError('필수 항목이 입력되지 않았습니다.', 400);
+    }
+
+    let tokenValue: any;
+    try {
+      tokenValue = jwt.verify(token, process.env.TOKEN_KEY || 'tokenkey');
+      if (tokenValue.publicip !== userPublicIp) {
+        return throwError('토큰 검증에 실패했습니다.', 403);
+      }
+    } catch (e) {
+      return throwError('토큰 검증에 실패했습니다.', 403);
+    }
+
+    return tokenValue.userid;
   } catch (e) {
     next(e);
   }
