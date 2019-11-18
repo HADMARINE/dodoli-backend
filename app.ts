@@ -11,7 +11,7 @@ const routes = getRoutes();
 
 app.use(
   cors({
-    origin: process.env.NODE_ENV === 'development' ? '*' : 'https://dodoli.net'
+    origin: process.env.NODE_ENV === 'development' ? '*' : '*'
   })
 );
 app.use(bodyParser.json({ extended: true }));
