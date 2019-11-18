@@ -60,7 +60,7 @@ router.post('/', async (req, res, next) => {
 
     await user.save();
 
-    res.status(201).send(true);
+    res.status(201).json({ state: true });
   } catch (e) {
     next(e);
   }
@@ -76,20 +76,23 @@ router.post('/:id/modify', async (req, res, next) => {
 
 router.post('/overlap', async (req, res, next) => {
   try {
-    const { type, content } = req.body;
+    let { type, content } = req.body;
 
-    if (!type || !content) {
+    if (!type || content === undefined) {
       return throwError('필수 항목이 입력되지 않았습니다.', 400);
     }
-    const typeArray: Array<String> = ['uid', 'nickname', 'email'];
+    const typeArray: Array<String> = ['id', 'nickname', 'email'];
 
-    if (typeArray.indexOf(type) !== -1) {
+    if (typeArray.indexOf(type) === -1) {
       return throwError('입력 값이 잘못되었습니다', 400);
     }
 
-    const query: Object = { [type]: content };
+    if (type === 'id') {
+      type = 'uid';
+    }
 
-    const user: Object = User.findOne(query);
+    const query: Object = { [type]: content };
+    const user: any = await User.findOne(query);
 
     let status: number;
     if (user) {
